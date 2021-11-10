@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstdlib>
 using namespace std;
-const double eps = 0.000001;
+const double eps = 0.001;
 const int N = 2;//размерность
 int ind = 0;//номер последовательности
 
@@ -15,21 +15,33 @@ void print(vector <double> x)
     {
         cout<< x[i] << "   ";
     }
+    cout<<endl;
 }
-
-vector<double> sprod(vector <double> a, vector <double> b)//скалярное произведение
+void print(vector <vector<double>> x)
 {
-    vector <double> ab(N);
-    for(int i = 0; i < N; i++)
-        ab[i] = a[i] * b[i];
+    for (int i = 0; i < x.size(); i++)
+    {
+        for (int j = 0; j < x[i].size(); j++)
+        {
+        cout<< x[i][j] << "   ";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+}
+double sprod(vector <double> a, vector <double> b)//скалярное произведение
+{
+    double ab=0;
+    for(int i = 0; i < a.size(); i++)
+        ab += a[i] * b[i];
     return ab;
 
 }
 
 vector<double> smult(double a, vector <double> b)//умножение вектора на скаляр
 {
-    vector <double> ab(N);
-    for(int i = 0; i < N; i++)
+    vector <double> ab(b.size());
+    for(int i = 0; i < b.size(); i++)
         ab[i] = a*b[i];
     return ab;
 
@@ -37,8 +49,8 @@ vector<double> smult(double a, vector <double> b)//умножение векто
 
 vector<double> sum(vector <double> a, vector <double> b)//сумма векторов
 {
-    vector <double> ab(N);
-    for(int i = 0; i < N; i++)
+    vector <double> ab(b.size());
+    for(int i = 0; i < a.size(); i++)
         ab[i] = a[i] + b[i];
     return ab;
 
@@ -54,7 +66,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
         {
             A[y].push_back(0.0);
             if(y == z)
-            A[y][z] = 1.0;
+            A[y][z+N] = 1.0;
         }
     }
     vector <double> temp(2*N);
@@ -63,9 +75,11 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
         if(abs(A[i][i]) < pow(eps,3))
         {
             k = i + 1;
-            while(A[k][i] < pow(eps,3) && k < N)
+            while(A[k][i] < pow(eps,3)&& k < N)
             {
                 k++;
+                if(k == N)
+                    exit(0);
             }
             temp = A[i];
             A[i] = A[k];
@@ -73,10 +87,11 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
         }
         p = i + 1;
         while(p < N)
-        {
+        {//print(A[1]);
             A[p] = sum(A[p],smult(-(A[p][i]/A[i][i]),A[i]));
             p++;
         }
+
     }
     for(int i = N-1; i >= 0; i--)//диагонализация
     {
@@ -102,7 +117,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
 double math_func (vector <double> x)
 {
     //здесь вбивается функция
-    return 0;
+    return pow(x[0],2)+pow(x[1],4);
 }
 
 vector <double> gradient(vector <double> pnt){//градиент
@@ -126,7 +141,8 @@ vector < vector <double>> hessian_matr(vector <double> pnt){// матрица в
     vector <double> pnt_tmp12 = pnt;
     vector <double> pnt_tmp21 = pnt;
     vector <double> pnt_tmp22 = pnt;
-    vector < vector <double>> hessian;
+    vector < vector <double>> hessian(N,vector <double>(N));
+
     double tau = 0.1*sqrt(eps);
     for (int i = 0; i < N; i++)
     {
@@ -140,18 +156,19 @@ vector < vector <double>> hessian_matr(vector <double> pnt){// матрица в
             pnt_tmp21[j]+=tau;
             pnt_tmp22[i]-=tau;
             pnt_tmp22[j]-=tau;
-            hessian[i][j]=(math_func(pnt_tmp11)-math_func(pnt_tmp21)
-                        -math_func(pnt_tmp12)+math_func(pnt_tmp22))/(4*tau*tau);
+            hessian[i][j]=((math_func(pnt_tmp11)-math_func(pnt_tmp21)
+                        -math_func(pnt_tmp12)+math_func(pnt_tmp22))/(4*tau*tau));
             pnt_tmp11=pnt_tmp12=pnt_tmp21=pnt_tmp22=pnt;
         }
     }
+    print(hessian);
     return hessian;
 }
 
 bool criteria1(vector <double> Xcur, vector <double> Xprv)
 {
    ::ind++;
-   vector <double> tmpgr = grad(Xcur);
+   vector <double> tmpgr = gradient(Xcur);
    if(
       sprod(sum(Xcur,smult(-1,Xprv)),sum(Xcur,smult(-1,Xprv))) < sqrt(eps) &&
       abs(math_func(Xcur)-math_func(Xprv) < sqrt(eps)) &&
@@ -165,10 +182,10 @@ bool criteria1(vector <double> Xcur, vector <double> Xprv)
 bool criteria2(vector <double> Xcur, vector <double> Xprv)
 {
    ::ind++;
-   vector <double> tmpgr = grad(Xcur);
+   vector <double> tmpgr = gradient(Xcur);
    if(
       sprod(sum(Xcur,smult(-1,Xprv)),sum(Xcur,smult(-1,Xprv))) < eps &&
-      abs(math_func(Xcur)-math_func(Xprv) < eps &&
+      abs(math_func(Xcur)-math_func(Xprv)) < eps &&
       sprod(tmpgr,tmpgr) < eps
       )
         return true;
@@ -181,12 +198,12 @@ vector <double> fst_method (vector <double> Xcur)//выбор альфа_к ме
     double l, a = 0 , b = 1 , r , c , d;
     r = (3 - sqrt(5))/2;
     l = a - b;
-    vector <double> tgrad = grad(Xcur);
-    tempeps = sqrt(eps);
+    vector <double> tgrad = gradient(Xcur);
+    double tempeps = sqrt(eps);
     while(l > tempeps)
     {
-        c = a + r(b - a);
-        d = b - r(b - a);
+        c = a + r*(b - a);
+        d = b - r*(b - a);
         if( math_func(sum(Xcur,smult(-c,tgrad))) < math_func(sum(Xcur,smult(-d,tgrad))))
             b = d;
         else
@@ -198,8 +215,8 @@ vector <double> fst_method (vector <double> Xcur)//выбор альфа_к ме
 
 vector <double> sec_method (vector <double> Xcur)//выбор альфа_к методом дробления шага
 {
-    double lam = 1/2; mu = 2, a = 1;
-    vector <double> tgrad = grad(Xcur);
+    double lam = 1/2, mu = 2, a = 1;
+    vector <double> tgrad = gradient(Xcur);
     vector <double> Hk(N);
     for(int i  = 0; i<N; i++)
     {
@@ -225,9 +242,9 @@ void finding_min(vector <double> Xapr)
         Xapr = Xnxt;
         Xnxt = fst_method(Xnxt);
     }
-    cout<<"Первый шаг завершился за "<< ind<<" итераций"<<endl;
-    cout<<"В точке "; print(Xnxt) cout<<endl;
-    cout<<"Значение функции "<< math_func(Xnxt)<<endl;
+    cout<<"Pervii shag zavershilsya za "<< ind<<" iteracii"<<endl;
+    cout<<"V tochke "; print(Xnxt); cout<<endl;
+    cout<<"Znachenie funkcii "<< math_func(Xnxt)<<endl;
     double perv = ind;
     Xapr = Xnxt;
     Xnxt = sec_method(Xapr);
@@ -236,15 +253,15 @@ void finding_min(vector <double> Xapr)
         Xapr = Xnxt;
         Xnxt = sec_method(Xnxt);
     }
-    cout<<"Второй шаг завершился за "<< ind - perv<<" итераций"<<endl;
-    cout<<"В точке "; print(Xnxt) cout<<endl;
-    cout<<"Значение функции "<< math_func(Xnxt)<<endl;
+    cout<<"Vtoroi shag zavershilsya za "<< ind - perv<<" iteracii"<<endl;
+    cout<<"V tochke "; print(Xnxt); cout<<endl;
+    cout<<"Znachenie funkcii "<< math_func(Xnxt)<<endl;
 }
 
 int main()
 {
     setlocale(LC_ALL,"ru");
-    vector<double> x = {1 ,1 ,1 ,1};//начальное приблежение
+    vector<double> x = {1,2};//начальное приблежение
     finding_min(x);
     return 0;
 }
