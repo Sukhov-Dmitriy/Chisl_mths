@@ -9,7 +9,7 @@ const double eps = 0.000001;
 const int N = 3;//размерность
 int ind = 0;//номер последовательности
 
-void print(vector <double> &x)
+void print(const vector <double> &x)
 {
     for (int i = 0; i < x.size(); i++)
     {
@@ -17,7 +17,7 @@ void print(vector <double> &x)
     }
     cout<<endl;
 }
-void print(vector <vector<double>> &x)
+void print(const vector <vector<double>> &x)
 {
     for (int i = 0; i < x.size(); i++)
     {
@@ -38,7 +38,7 @@ double sprod(const vector <double> &a, const vector <double> &b)//скалярн
 
 }
 
-vector<double> smult(double a, vector <double> b)//умножение вектора на скаляр
+vector<double> smult(double a, const vector <double> &b)//умножение вектора на скаляр
 {
     vector <double> ab(b.size());
     for(int i = 0; i < b.size(); i++)
@@ -47,7 +47,7 @@ vector<double> smult(double a, vector <double> b)//умножение векто
 
 }
 
-vector<double> sum(vector <double> a, vector <double> b)//сумма векторов
+vector<double> sum(const vector <double> &a, const vector <double> &b)//сумма векторов
 {
     vector <double> ab(b.size());
     for(int i = 0; i < a.size(); i++)
