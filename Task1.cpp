@@ -78,8 +78,12 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
             while(A[k][i] < pow(eps,3)&& k < N)
             {
                 k++;
-                if(k == N)
-                    exit(0);
+                if(k == N)//проверяю на равенство определителя нулю
+                {
+                 cout<<"Err. Nulevoi determinant"
+                 exit(0);
+                }
+
             }
             temp = A[i];
             A[i] = A[k];
