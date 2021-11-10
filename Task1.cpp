@@ -9,7 +9,7 @@ const double eps = 0.001;
 const int N = 2;//размерность
 int ind = 0;//номер последовательности
 
-void print(vector <double> x)
+void print(vector <double> &x)
 {
     for (int i = 0; i < x.size(); i++)
     {
@@ -17,7 +17,7 @@ void print(vector <double> x)
     }
     cout<<endl;
 }
-void print(vector <vector<double>> x)
+void print(vector <vector<double>> &x)
 {
     for (int i = 0; i < x.size(); i++)
     {
@@ -29,7 +29,7 @@ void print(vector <vector<double>> x)
     }
     cout<<endl;
 }
-double sprod(vector <double> a, vector <double> b)//скалярное произведение
+double sprod(vector <double> &a, vector <double> &b)//скалярное произведение
 {
     double ab=0;
     for(int i = 0; i < a.size(); i++)
@@ -38,7 +38,7 @@ double sprod(vector <double> a, vector <double> b)//скалярное прои�
 
 }
 
-vector<double> smult(double a, vector <double> b)//умножение вектора на скаляр
+vector<double> smult(double a, vector <double> &b)//умножение вектора на скаляр
 {
     vector <double> ab(b.size());
     for(int i = 0; i < b.size(); i++)
@@ -47,7 +47,7 @@ vector<double> smult(double a, vector <double> b)//умножение векто
 
 }
 
-vector<double> sum(vector <double> a, vector <double> b)//сумма векторов
+vector<double> sum(vector <double> &a, vector <double> &b)//сумма векторов
 {
     vector <double> ab(b.size());
     for(int i = 0; i < a.size(); i++)
@@ -69,19 +69,20 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
             A[y][z+N] = 1.0;
         }
     }
+    print(A);
     vector <double> temp(2*N);
     for(int i = 0; i < N; i++)//вверхтреугольность
     {
         if(abs(A[i][i]) < pow(eps,3))
         {
             k = i + 1;
-            while(A[k][i] < pow(eps,3)&& k < N)
+            while(A[k][i] < pow(eps,3) && k < N)
             {
                 k++;
                 if(k == N)//проверяю на равенство определителя нулю
                 {
-                 cout<<"Err. Nulevoi determinant"
-                 exit(0);
+                 cout<<"Err. Nulevoi determinant"<<endl;
+                 exit(-1);
                 }
 
             }
