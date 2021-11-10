@@ -5,8 +5,8 @@
 #include <cmath>
 #include <cstdlib>
 using namespace std;
-const double eps = 0.001;
-const int N = 2;//размерность
+const double eps = 0.000001;
+const int N = 3;//размерность
 int ind = 0;//номер последовательности
 
 void print(vector <double> &x)
@@ -29,7 +29,7 @@ void print(vector <vector<double>> &x)
     }
     cout<<endl;
 }
-double sprod(vector <double> &a, vector <double> &b)//скалярное произведение
+double sprod(const vector <double> &a, const vector <double> &b)//скалярное произведение
 {
     double ab=0;
     for(int i = 0; i < a.size(); i++)
@@ -38,7 +38,7 @@ double sprod(vector <double> &a, vector <double> &b)//скалярное про�
 
 }
 
-vector<double> smult(double a, vector <double> &b)//умножение вектора на скаляр
+vector<double> smult(double a, vector <double> b)//умножение вектора на скаляр
 {
     vector <double> ab(b.size());
     for(int i = 0; i < b.size(); i++)
@@ -47,7 +47,7 @@ vector<double> smult(double a, vector <double> &b)//умножение вект�
 
 }
 
-vector<double> sum(vector <double> &a, vector <double> &b)//сумма векторов
+vector<double> sum(vector <double> a, vector <double> b)//сумма векторов
 {
     vector <double> ab(b.size());
     for(int i = 0; i < a.size(); i++)
@@ -81,7 +81,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
                 k++;
                 if(k == N)//проверяю на равенство определителя нулю
                 {
-                 cout<<"Err. Nulevoi determinant"<<endl;
+                 cout<<"Err. Nulevoi determinant u matrici vtor proizvodnih"<<endl;
                  exit(-1);
                 }
 
@@ -122,7 +122,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
 double math_func (vector <double> x)
 {
     //здесь вбивается функция
-    return pow(x[0],2)+pow(x[1],4);
+    return pow(x[0]-1,2)+pow(x[1]-2,2)+pow(x[2]-3,2);
 }
 
 vector <double> gradient(vector <double> pnt){//градиент
