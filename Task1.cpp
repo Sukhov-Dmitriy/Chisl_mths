@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cstdlib>
 using namespace std;
-const double eps = 0.000001;
+const double eps = 0.0000001;
 const int N = 3;//размерность
 int ind = 0;//номер последовательности
 
@@ -69,7 +69,6 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
             A[y][z+N] = 1.0;
         }
     }
-    print(A);
     vector <double> temp(2*N);
     for(int i = 0; i < N; i++)//вверхтреугольность
     {
@@ -92,7 +91,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
         }
         p = i + 1;
         while(p < N)
-        {//print(A[1]);
+        {
             A[p] = sum(A[p],smult(-(A[p][i]/A[i][i]),A[i]));
             p++;
         }
@@ -122,7 +121,7 @@ vector<vector<double>> invers(vector<vector<double>> A)// поиск обрат�
 double math_func (vector <double> x)
 {
     //здесь вбивается функция
-    return pow(x[0]-1,2)+pow(x[1]-2,2)+pow(x[2]-3,2);
+    return pow(x[0]-1,6)+(2*pow(x[1]-2,2))+(0.1*pow(x[2]-3,4));
 }
 
 vector <double> gradient(vector <double> pnt){//градиент
@@ -166,7 +165,6 @@ vector < vector <double>> hessian_matr(vector <double> pnt){// матрица в
             pnt_tmp11=pnt_tmp12=pnt_tmp21=pnt_tmp22=pnt;
         }
     }
-    print(hessian);
     return hessian;
 }
 
@@ -202,8 +200,9 @@ vector <double> fst_method (vector <double> Xcur)//выбор альфа_к ме
 {
     double l, a = 0 , b = 1 , r , c , d;
     r = (3 - sqrt(5))/2;
-    l = a - b;
+    l = b - a;
     vector <double> tgrad = gradient(Xcur);
+
     double tempeps = sqrt(eps);
     while(l > tempeps)
     {
@@ -213,7 +212,7 @@ vector <double> fst_method (vector <double> Xcur)//выбор альфа_к ме
             b = d;
         else
             a = c;
-        l = a - b;
+        l = b - a;
     }
     return sum(Xcur,smult(-(b-a)/2,tgrad));
 }
@@ -242,6 +241,11 @@ void finding_min(vector <double> Xapr)
 {
     vector <double> Xnxt;
     Xnxt = fst_method(Xapr);
+    if(sprod(Xnxt,Xnxt) > 1e10)
+    {
+        cout<<"Posledov. ushla daleko ot 0"<<endl;
+        exit(-1);
+    }
     while(!criteria1(Xnxt, Xapr))
     {
         Xapr = Xnxt;
@@ -266,7 +270,7 @@ void finding_min(vector <double> Xapr)
 int main()
 {
     setlocale(LC_ALL,"ru");
-    vector<double> x = {1,2};//начальное приблежение
+    vector<double> x = {4,20,4};//начальное приблежение
     finding_min(x);
     return 0;
 }
